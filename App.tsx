@@ -1,11 +1,17 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import MapComponent from './component/MapComponent';
+import RestaurantInfoComponent from './component/RestaurantInfo';
+import { useState } from 'react';
+import { Resturant } from './repository/types';
 
 export default function App() {
+  const [restaurant, setRestaurant] = useState<Resturant>()
   return (
     <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <MapComponent setRestaurant={setRestaurant} />
+      {restaurant && (
+        <RestaurantInfoComponent restaurant={restaurant} />
+      )}
     </View>
   );
 }
@@ -13,8 +19,14 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
+  restaurantContainer: {
+    zIndex: 99,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    backgroundColor: 'white',
+    width: '100%',
+    height: '40%',
+  }
 });
