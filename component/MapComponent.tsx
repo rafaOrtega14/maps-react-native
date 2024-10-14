@@ -5,7 +5,7 @@ import * as Location from 'expo-location';
 import Restaurants from '../repository/restaurants';
 import { Resturant } from '../repository/types';
 
-type MapProps = { setRestaurant: React.Dispatch<React.SetStateAction<Resturant | undefined>>}
+type MapProps = { setRestaurant: React.Dispatch<React.SetStateAction<Resturant | undefined>> }
 
 export default function MapComponent({ setRestaurant }: MapProps) {
     const [location, setLocation] = useState<Location.LocationObject>();
