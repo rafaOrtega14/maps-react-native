@@ -1,11 +1,14 @@
-import { StyleSheet, View } from 'react-native';
-import MapComponent from './component/MapComponent';
-import RestaurantInfoComponent from './component/RestaurantInfo';
-import { useEffect, useRef, useState } from 'react';
-import { Resturant } from './repository/types';
+import { useState } from 'react';
+import { Restaurant } from './repository/types';
 import { PaperProvider } from 'react-native-paper';
 import * as Notifications from 'expo-notifications';
-import { registerForPushNotificationsAsync } from './services/Notification';
+import globalContext from './context/global';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import MainScreen from './pages/MainScreen';
+import RestaurantScreen from './pages/RestaurantScreen';
+import { RootStackParamList } from './types/Navigation';
+import useNotificationListener from './hooks/useNotificationListener';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -16,42 +19,31 @@ Notifications.setNotificationHandler({
 });
 
 export default function App() {
-  const [expoPushToken, setExpoPushToken] = useState('');
-  const [restaurant, setRestaurant] = useState<Resturant>();
-  const notificationListener = useRef<Notifications.Subscription>();
-  const responseListener = useRef<Notifications.Subscription>();
 
-  useEffect(() => {
-    registerForPushNotificationsAsync()
-      .then(token => setExpoPushToken(token ?? ''))
-      .catch((error: any) => setExpoPushToken(`${error}`));
+  const [restaurant, setRestaurant] = useState<Restaurant>();
+  const [expoPushToken] = useNotificationListener('rafa');
 
+  const Stack = createNativeStackNavigator<RootStackParamList>();
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(JSON.stringify(response));
-    });
-
-    return () => {
-      notificationListener.current &&
-        Notifications.removeNotificationSubscription(notificationListener.current);
-      responseListener.current &&
-        Notifications.removeNotificationSubscription(responseListener.current);
-    };
-  }, []);
   return (
-    <PaperProvider>
-      <View style={styles.container}>
-        <MapComponent setRestaurant={setRestaurant} />
-        {restaurant && (
-          <RestaurantInfoComponent restaurant={restaurant} expoPushToken={expoPushToken} />
-        )}
-      </View>
-    </PaperProvider>
+    <globalContext.Provider value={{restaurant, setRestaurant, expoPushToken}}>
+      <PaperProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen 
+              name="main"
+              component={MainScreen}
+              options={{ headerShown: false }} 
+            />
+            <Stack.Screen
+              name="restaurant"
+              component={RestaurantScreen}
+              options={{title: restaurant?.name}}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </PaperProvider>
+    </globalContext.Provider>
+
     );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  }
-});

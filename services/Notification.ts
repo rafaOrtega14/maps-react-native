@@ -2,9 +2,9 @@ import Constants from "expo-constants";
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { Platform } from "react-native";
-import { Resturant } from "../repository/types";
+import { Restaurant } from "../repository/types";
 
-export async function sendPushNotification(expoPushToken: string, data: Resturant) {
+export async function sendPushNotification(expoPushToken: string, data: Restaurant) {
     const message = {
       to: expoPushToken,
       sound: 'default',

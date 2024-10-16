@@ -1,12 +1,12 @@
-export type Resturant = {
+export type Restaurant = {
     grades: number[],
     name: string,
-    contact: ResturantContact
+    contact: RestaurantContact
     stars: number,
     categories: string[]
 }
 
-export type ResturantContact = {
+export type RestaurantContact = {
     email: string,
     phone: string,
     location: number[]

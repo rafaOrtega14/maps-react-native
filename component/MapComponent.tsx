@@ -1,17 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import { StyleSheet, Text } from 'react-native';
 import * as Location from 'expo-location';
 import Restaurants from '../repository/restaurants';
-import { Resturant } from '../repository/types';
+import { Restaurant } from '../repository/types';
+import globalContext from '../context/global';
 
-type MapProps = { setRestaurant: React.Dispatch<React.SetStateAction<Resturant | undefined>> }
-
-export default function MapComponent({ setRestaurant }: MapProps) {
+export default function MapComponent() {
     const [location, setLocation] = useState<Location.LocationObject>();
-    const restaurants = useRef<Array<Resturant>>(Restaurants);
+    const restaurants = useRef<Array<Restaurant>>(Restaurants);
+    
+    const { setRestaurant } = useContext(globalContext);
 
-    const handlePressRestaurant = (restaurant: Resturant) => {
+    const handlePressRestaurant = (restaurant: Restaurant) => {
         setRestaurant(restaurant)
     }
     useEffect(() => {

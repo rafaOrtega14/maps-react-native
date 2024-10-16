@@ -1,38 +1,47 @@
 import { View, StyleSheet } from "react-native";
 import { Button, Text } from 'react-native-paper'
-import { Resturant } from "../repository/types";
 import Categories from "./Categories";
 import Rating from "./Rating";
 import { sendPushNotification } from "../services/Notification";
+import { useContext } from "react";
+import globalContext from "../context/global";
+import { Props } from "../types/Navigation";
 
-type RestaurantProps = { restaurant: Resturant, expoPushToken?: string }
+export default function RestaurantInfoComponent({ navigation }: Props<'main'>) {
+    const { restaurant, expoPushToken } = useContext(globalContext)
+    if(restaurant) {
+        return (
+            <View style={styles.restaurantContainer}>
+                <Text style={styles.restaurantName} variant="displaySmall">{restaurant.name}</Text>
+                <View style={styles.centerContent}>
+                    <Text variant="bodyMedium">{restaurant.contact.email}</Text>
+                    <Text variant="bodyMedium">{restaurant.contact.phone}</Text>
+                </View>
+                <Categories categories={restaurant.categories} />
+                <Rating rate={restaurant.stars} />
+                <View style={styles.centerContent}>
+                    <Button 
+                        style={styles.bookButton} 
+                        mode="contained" 
+                        onPress={async () => {
+                                if(expoPushToken) {
+                                    try {
+                                        await sendPushNotification(expoPushToken, restaurant)
+                                        navigation.navigate('restaurant')
+                                    } catch(e) {
+                                        console.log(e)
+                                    }
 
-export default function RestaurantInfoComponent({ restaurant, expoPushToken }: RestaurantProps) {
-    return (
-        <View style={styles.restaurantContainer}>
-            <Text style={styles.restaurantName} variant="displaySmall">{restaurant.name}</Text>
-            <View style={styles.centerContent}>
-                <Text variant="bodyMedium">{restaurant.contact.email}</Text>
-                <Text variant="bodyMedium">{restaurant.contact.phone}</Text>
-            </View>
-            <Categories categories={restaurant.categories} />
-            <Rating rate={restaurant.stars} />
-            <View style={styles.centerContent}>
-                <Button 
-                    style={styles.bookButton} 
-                    mode="contained" 
-                    onPress={async () => {
-                            if(expoPushToken) {
-                                await sendPushNotification(expoPushToken, restaurant)
+                                }
                             }
                         }
-                    }
-                >
-                    Reserva
-                </Button>
+                    >
+                        Reserva
+                    </Button>
+                </View>
             </View>
-        </View>
-    )
+        )
+    }
 }
 
 
